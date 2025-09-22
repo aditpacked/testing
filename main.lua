@@ -21,12 +21,6 @@ local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0, 14)
 UICorner.Parent = Frame
 
-local UIStroke = Instance.new("UIStroke")
-UIStroke.Thickness = 2
-UIStroke.Color = Color3.fromRGB(255, 255, 255) -- putih
-UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-UIStroke.Parent = Frame
-
 -- === TITLE BAR ===
 local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 36)
@@ -54,11 +48,6 @@ local function createButton(name, text, posY, link)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 10)
     corner.Parent = btn
-
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(255, 255, 255) -- putih
-    stroke.Thickness = 1.5
-    stroke.Parent = btn
 
     btn.MouseButton1Click:Connect(function()
         if link and link ~= "" then
@@ -92,11 +81,6 @@ CloseBtn.Parent = Frame
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(1, 0)
 corner.Parent = CloseBtn
-
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(255, 255, 255) -- putih
-stroke.Thickness = 1.5
-stroke.Parent = CloseBtn
 
 CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
