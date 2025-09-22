@@ -22,26 +22,16 @@ player.CharacterAdded:Connect(refreshHRP)
 local frameTime = 1/30
 local playbackRate = 1.0
 local isRunning = false
-
 local ReplayFolder = "Wataxrecord"
 
----------------------------------------------------------------------
--- GUI ROOT
----------------------------------------------------------------------
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "WataXReplay"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = game.CoreGui
 
----------------------------------------------------------------------
--- FILE HANDLER & REPLAY CORE
----------------------------------------------------------------------
 local function loadReplayJSON(folder, fileName)
     local path = ReplayFolder.."/"..folder.."/"..fileName
-    if not isfile(path) then
-        warn("Replay file tidak ditemukan:", path)
-        return {}
-    end
+    if not isfile(path) then return {} end
     local raw = readfile(path)
     local data = HttpService:JSONDecode(raw)
     local frames = {}
@@ -54,7 +44,10 @@ local function loadReplayJSON(folder, fileName)
 end
 
 local function getReplayFolders()
-local name = f:match("[^/\\]+$")
+    local result = {}
+    for _, f in ipairs(listfiles(ReplayFolder)) do
+        if isfolder(f) then
+            local name = f:match("[^/\\]+$")
             table.insert(result, name)
         end
     end
@@ -116,15 +109,12 @@ local function playReplay(frames)
     isRunning = false
 end
 
--- 🔄 versi looping dengan delay 10 detik setelah respawn
 local function playChainedReplays(framesList)
     if #framesList == 0 then return end
     isRunning = true
-
     while isRunning do
         if not hrp then refreshHRP() end
         local used = {}
-
         local currentFrames
         local nearestDist = math.huge
         for _, frames in ipairs(framesList) do
@@ -136,7 +126,6 @@ local function playChainedReplays(framesList)
                 end
             end
         end
-
         while isRunning and currentFrames do
             used[currentFrames] = true
             local startIdx = getNearestFrameIndex(currentFrames)
@@ -145,7 +134,6 @@ local function playChainedReplays(framesList)
                 lerpCF(currentFrames[i], currentFrames[i+1])
             end
             if not isRunning then break end
-
             local lastCF = currentFrames[#currentFrames]
             local nextFrames, nextDist = nil, math.huge
             for _, frames in ipairs(framesList) do
@@ -159,43 +147,32 @@ local function playChainedReplays(framesList)
             end
             currentFrames = nextFrames
         end
-
         if not isRunning then break end
-
         local char = player.Character or player.CharacterAdded:Wait()
         char:WaitForChild("HumanoidRootPart")
         task.wait(10)
     end
-
     isRunning = false
 end
 
 local function showReplaySelectorMulti(folder)
     local files = getReplayFiles(folder)
-    if #files == 0 then
-        warn("Tidak ada replay JSON di folder", folder)
-        return
-    end
-
+    if #files == 0 then return end
     local Popup = Instance.new("Frame", screenGui)
     Popup.Size = UDim2.new(0, 260, 0, 360)
     Popup.Position = UDim2.new(0.5, -130, 0.5, -180)
     Popup.BackgroundColor3 = Color3.fromRGB(20,20,20)
     Instance.new("UICorner", Popup).CornerRadius = UDim.new(0,10)
-
     local Scroll = Instance.new("ScrollingFrame", Popup)
     Scroll.Size = UDim2.new(1, -10, 1, -50)
     Scroll.Position = UDim2.new(0,5,0,5)
     Scroll.BackgroundTransparency = 1
     Scroll.ScrollBarThickness = 6
     Scroll.CanvasSize = UDim2.new(0,0,0,#files * 32)
-
     local layout = Instance.new("UIListLayout", Scroll)
     layout.SortOrder = Enum.SortOrder.LayoutOrder
     layout.Padding = UDim.new(0,4)
-
     local selected = {}
-
     for _, name in ipairs(files) do
         local Btn = Instance.new("TextButton", Scroll)
         Btn.Size = UDim2.new(1, 0, 0, 28)
@@ -204,7 +181,6 @@ local function showReplaySelectorMulti(folder)
         Btn.TextColor3 = Color3.fromRGB(220,220,220)
         Btn.Font = Enum.Font.Gotham
         Btn.TextScaled = true
-
         Btn.MouseButton1Click:Connect(function()
             if selected[name] then
                 selected[name] = nil
@@ -215,7 +191,6 @@ local function showReplaySelectorMulti(folder)
             end
         end)
     end
-
     local okBtn = Instance.new("TextButton", Popup)
     okBtn.Size = UDim2.new(1,-10,0,32)
     okBtn.Position = UDim2.new(0,5,1,-37)
@@ -225,7 +200,6 @@ local function showReplaySelectorMulti(folder)
     okBtn.Font = Enum.Font.GothamBold
     okBtn.TextScaled = true
     Instance.new("UICorner", okBtn).CornerRadius = UDim.new(0,8)
-
     okBtn.MouseButton1Click:Connect(function()
         Popup:Destroy()
         local framesList = {}
@@ -243,28 +217,21 @@ end
 
 local function showFolderSelector()
     local folders = getReplayFolders()
-    if #folders == 0 then
-        warn("Tidak ada folder di "..ReplayFolder)
-        return
-    end
-
+    if #folders == 0 then return end
     local Popup = Instance.new("Frame", screenGui)
     Popup.Size = UDim2.new(0, 240, 0, 320)
     Popup.Position = UDim2.new(0.5, -120, 0.5, -160)
     Popup.BackgroundColor3 = Color3.fromRGB(20,20,20)
     Instance.new("UICorner", Popup).CornerRadius = UDim.new(0,10)
-
     local Scroll = Instance.new("ScrollingFrame", Popup)
     Scroll.Size = UDim2.new(1, -10, 1, -10)
     Scroll.Position = UDim2.new(0,5,0,5)
     Scroll.BackgroundTransparency = 1
     Scroll.ScrollBarThickness = 6
     Scroll.CanvasSize = UDim2.new(0,0,0,#folders * 32)
-
     local layout = Instance.new("UIListLayout", Scroll)
     layout.SortOrder = Enum.SortOrder.LayoutOrder
     layout.Padding = UDim.new(0,4)
-
     for _, folder in ipairs(folders) do
         local Btn = Instance.new("TextButton", Scroll)
         Btn.Size = UDim2.new(1, 0, 0, 28)
@@ -273,7 +240,6 @@ local function showFolderSelector()
         Btn.TextColor3 = Color3.fromRGB(220,220,220)
         Btn.Font = Enum.Font.Gotham
         Btn.TextScaled = true
-
         Btn.MouseButton1Click:Connect(function()
             Popup:Destroy()
             showReplaySelectorMulti(folder)
@@ -281,9 +247,6 @@ local function showFolderSelector()
     end
 end
 
----------------------------------------------------------------------
--- MENU GUI (Dark Minimalis, hanya Start To End)
----------------------------------------------------------------------
 local frame = Instance.new("Frame",screenGui)
 frame.Size = UDim2.new(0,260,0,120)
 frame.Position = UDim2.new(0.5,-130,0.5,-60)
