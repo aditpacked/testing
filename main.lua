@@ -66,8 +66,8 @@ local function createButton(name, text, posY, link)
     end)
 end
 
-createButton("RecordBtn", "⏺ Record Menu", 50, "https://raw.githubusercontent.com/WataXScript/CreateAuto/refs/heads/main/Loader/record.lua")
-createButton("ReplayBtn", "▶ Replay Menu", 100, "https://raw.githubusercontent.com/WataXScript/CreateAuto/refs/heads/main/Loader/replay2.lua")
+createButton("RecordBtn", "⏺ Record Menu", 50, "https://raw.githubusercontent.com/aditpacked/testing/refs/heads/main/rekam.lua")
+createButton("ReplayBtn", "▶ Replay Menu", 100, "https://raw.githubusercontent.com/aditpacked/testing/refs/heads/main/REPLAY.LUA")
 
 
 local CloseBtn = Instance.new("TextButton")
