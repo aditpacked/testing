@@ -2,7 +2,6 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 
-
 pcall(function()
     local raw = game:HttpGet("https://raw.githubusercontent.com/aditpacked/testing/refs/heads/main/bypass.lua")
     loadstring(raw)()
@@ -27,7 +26,7 @@ local isRunning = false
 local ReplayFolder = "Wataxrecord"
 
 ---------------------------------------------------------------------
--- mau ngapain
+-- GUI ROOT
 ---------------------------------------------------------------------
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "WataXReplay"
@@ -35,7 +34,7 @@ screenGui.ResetOnSpawn = false
 screenGui.Parent = game.CoreGui
 
 ---------------------------------------------------------------------
--- lanjut aja scroll nyari apa sih
+-- FILE HANDLER
 ---------------------------------------------------------------------
 local function loadReplayJSON(folder, fileName)
     local path = ReplayFolder.."/"..folder.."/"..fileName
@@ -77,6 +76,9 @@ local function getReplayFiles(folder)
     return result
 end
 
+---------------------------------------------------------------------
+-- REPLAY CORE
+---------------------------------------------------------------------
 local function getNearestFrameIndex(frames)
     local startIdx, dist = 1, math.huge
     if hrp then
@@ -121,55 +123,63 @@ local function playReplay(frames)
     isRunning = false
 end
 
-
+-- 🔄 versi looping
 local function playChainedReplays(framesList)
     if #framesList == 0 then return end
-    if not hrp then refreshHRP() end
     isRunning = true
 
-    local used = {} 
+    while isRunning do
+        if not hrp then refreshHRP() end
+        local used = {}
 
-    
-    local currentFrames
-    local nearestDist = math.huge
-    for _, frames in ipairs(framesList) do
-        local d = (frames[1].Position - hrp.Position).Magnitude
-        if d < nearestDist then
-            nearestDist = d
-            currentFrames = frames
-        end
-    end
-
-    while isRunning and currentFrames do
-        used[currentFrames] = true -- tandai replay ini sudah dipakai
-
-        
-        local startIdx = getNearestFrameIndex(currentFrames)
-        for i = startIdx, #currentFrames - 1 do
-            if not isRunning then break end
-            lerpCF(currentFrames[i], currentFrames[i+1])
-        end
-        if not isRunning then break end
-
-        
-        local lastCF = currentFrames[#currentFrames]
-        local nextFrames, nextDist = nil, math.huge
+        -- pilih replay terdekat dari posisi awal
+        local currentFrames
+        local nearestDist = math.huge
         for _, frames in ipairs(framesList) do
-            if not used[frames] and #frames > 0 then
-                local d = (frames[1].Position - lastCF.Position).Magnitude
-                if d < nextDist then
-                    nextDist = d
-                    nextFrames = frames
+            if #frames > 0 then
+                local d = (frames[1].Position - hrp.Position).Magnitude
+                if d < nearestDist then
+                    nearestDist = d
+                    currentFrames = frames
                 end
             end
         end
 
-        currentFrames = nextFrames 
+        -- mainkan semua replay
+        while isRunning and currentFrames do
+            used[currentFrames] = true
+            local startIdx = getNearestFrameIndex(currentFrames)
+            for i = startIdx, #currentFrames - 1 do
+                if not isRunning then break end
+                lerpCF(currentFrames[i], currentFrames[i+1])
+            end
+            if not isRunning then break end
+
+            -- pilih replay berikutnya
+            local lastCF = currentFrames[#currentFrames]
+            local nextFrames, nextDist = nil, math.huge
+            for _, frames in ipairs(framesList) do
+                if not used[frames] and #frames > 0 then
+                    local d = (frames[1].Position - lastCF.Position).Magnitude
+                    if d < nextDist then
+                        nextDist = d
+                        nextFrames = frames
+                    end
+                end
+            end
+            currentFrames = nextFrames
+        end
+
+        if not isRunning then break end
+
+        -- tunggu respawn + delay 10 detik
+        local char = player.Character or player.CharacterAdded:Wait()
+        char:WaitForChild("HumanoidRootPart")
+        task.wait(10)
     end
 
     isRunning = false
 end
-
 
 local function stopRoute()
     if isRunning then
@@ -179,7 +189,7 @@ local function stopRoute()
 end
 
 ---------------------------------------------------------------------
--- lu liatin apa
+-- SELECTOR POPUP
 ---------------------------------------------------------------------
 local function showReplaySelectorSingle(folder)
     local files = getReplayFiles(folder)
@@ -351,7 +361,7 @@ local function showFolderSelector(mode)
 end
 
 ---------------------------------------------------------------------
--- apa lu liat liat
+-- MENU GUI
 ---------------------------------------------------------------------
 local frame = Instance.new("Frame",screenGui)
 frame.Size = UDim2.new(0,280,0,180)
@@ -448,6 +458,7 @@ miniBtn.MouseButton1Click:Connect(function()
     frame.Visible = false
     bubbleBtn.Visible = true
 end)
+
 bubbleBtn.MouseButton1Click:Connect(function()
     frame.Visible = true
     bubbleBtn.Visible = false
