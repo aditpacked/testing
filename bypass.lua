@@ -1,12 +1,14 @@
+
+
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 
 local isActive = true
+local isBeton = false
 local animConn
-local elapsedTime = 0
 
--- 🔹 Fungsi utama bypass anim
+
 local function setup(char)
     local humanoid = char:WaitForChild("Humanoid")
     local hrp = char:WaitForChild("HumanoidRootPart")
@@ -27,142 +29,116 @@ local function setup(char)
             end
         end
 
-        lastPos = hrp.Position
-    end)
-
-    -- 🔹 Anti-duduk (paksa berdiri kalau sempat duduk)
-    humanoid:GetPropertyChangedSignal("SeatPart"):Connect(function()
-        if humanoid.SeatPart then
-            humanoid.Sit = false
-            humanoid.SeatPart = nil
-            local weld = char:FindFirstChild("SeatWeld")
-            if weld then weld:Destroy() end
+        
+        if isBeton then
+            humanoid.Health = humanoid.MaxHealth
         end
+
+        lastPos = hrp.Position
     end)
 end
 
 player.CharacterAdded:Connect(setup)
 if player.Character then setup(player.Character) end
 
--- 🔹 Bikin kursi & batang pohon jadi tembus
-local function makeSeatsInvisible()
-    for _, obj in ipairs(workspace:GetDescendants()) do
-        if obj:IsA("Seat") or obj:IsA("VehicleSeat") then
-            obj.CanCollide = false
-            obj.Transparency = 1
-        end
-    end
-end
-
-workspace.DescendantAdded:Connect(function(obj)
-    if obj:IsA("Seat") or obj:IsA("VehicleSeat") then
-        obj.CanCollide = false
-        obj.Transparency = 1
-    end
-end)
-
-makeSeatsInvisible()
-
--- 🔹 UI Timer + tombol toggle
-local ScreenGui, TimerLabel, AnimBtn
-
-local function formatTime(sec)
-    local m = math.floor(sec/60)
-    local s = math.floor(sec%60)
-    return string.format("%02d:%02d", m, s)
-end
 
 local function createUI()
-    if player.PlayerGui:FindFirstChild("SUCKARDY_AnimUI") then
-        player.PlayerGui.SUCKARDY_AnimUI:Destroy()
+    if player.PlayerGui:FindFirstChild("WataX_AnimUI") then
+        player.PlayerGui.WataX_AnimUI:Destroy()
     end
 
-    ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "SUCKARDY_AnimUI"
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "WataX_AnimUI"
     ScreenGui.ResetOnSpawn = false
     ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
     local Frame = Instance.new("Frame")
-    Frame.Size = UDim2.new(0,160,0,110)
+    Frame.Size = UDim2.new(0,180,0,100)
     Frame.Position = UDim2.new(0.05,0,0.05,0)
-    Frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
-    Frame.BackgroundTransparency = 0.8
+    Frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
     Frame.BorderSizePixel = 0
     Frame.Active = true
     Frame.Draggable = true
     Frame.Parent = ScreenGui
 
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0,12)
+    UICorner.CornerRadius = UDim.new(0,10)
     UICorner.Parent = Frame
 
+    
     local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1,0,0,20)
-    Label.Position = UDim2.new(0,0,0,0)
+    Label.Size = UDim2.new(1,-10,0,25)
+    Label.Position = UDim2.new(0,5,0,5)
     Label.BackgroundTransparency = 1
-    Label.TextColor3 = Color3.fromRGB(180,220,255)
+    Label.TextColor3 = Color3.fromRGB(200,200,255)
     Label.Font = Enum.Font.GothamBold
-    Label.TextSize = 14
-    Label.Text = "SUCKARDY"
+    Label.TextSize = 16
+    Label.Text = "WataX"
     Label.Parent = Frame
 
-    AnimBtn = Instance.new("TextButton")
-    AnimBtn.Size = UDim2.new(1,-10,0,28)
-    AnimBtn.Position = UDim2.new(0,5,0,30)
-    AnimBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-    AnimBtn.BackgroundTransparency = 0.2
+    
+    local AnimBtn = Instance.new("TextButton")
+    AnimBtn.Size = UDim2.new(1,-10,0,30)
+    AnimBtn.Position = UDim2.new(0,5,0,35)
+    AnimBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
     AnimBtn.BorderSizePixel = 0
     AnimBtn.TextColor3 = Color3.fromRGB(255,255,255)
     AnimBtn.Font = Enum.Font.GothamBold
-    AnimBtn.TextSize = 13
+    AnimBtn.TextSize = 14
     AnimBtn.Text = "BYPASS: ON"
     AnimBtn.Parent = Frame
 
     local AnimCorner = Instance.new("UICorner")
-    AnimCorner.CornerRadius = UDim.new(0,6)
+    AnimCorner.CornerRadius = UDim.new(0,8)
     AnimCorner.Parent = AnimBtn
 
     AnimBtn.MouseButton1Click:Connect(function()
         isActive = not isActive
         if isActive then
             AnimBtn.Text = "BYPASS: ON"
-            AnimBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+            AnimBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
         else
             AnimBtn.Text = "BYPASS: OFF"
             AnimBtn.BackgroundColor3 = Color3.fromRGB(150,50,50)
         end
     end)
 
-    TimerLabel = Instance.new("TextLabel")
-    TimerLabel.Size = UDim2.new(1,0,0,24)
-    TimerLabel.Position = UDim2.new(0,0,0,70)
-    TimerLabel.BackgroundTransparency = 1
-    TimerLabel.TextColor3 = Color3.fromRGB(255,255,180)
-    TimerLabel.Font = Enum.Font.GothamBold
-    TimerLabel.TextSize = 14
-    TimerLabel.Text = "Timer: 00:00"
-    TimerLabel.Parent = Frame
+    
+    local BetonBtn = Instance.new("TextButton")
+    BetonBtn.Size = UDim2.new(1,-10,0,30)
+    BetonBtn.Position = UDim2.new(0,5,0,70)
+    BetonBtn.BackgroundColor3 = Color3.fromRGB(50,50,120)
+    BetonBtn.BorderSizePixel = 0
+    BetonBtn.TextColor3 = Color3.fromRGB(255,255,255)
+    BetonBtn.Font = Enum.Font.GothamBold
+    BetonBtn.TextSize = 14
+    BetonBtn.Text = "KEBAL: OFF"
+    BetonBtn.Parent = Frame
+
+    local BetonCorner = Instance.new("UICorner")
+    BetonCorner.CornerRadius = UDim.new(0,8)
+    BetonCorner.Parent = BetonBtn
+
+    BetonBtn.MouseButton1Click:Connect(function()
+        isBeton = not isBeton
+        if isBeton then
+            BetonBtn.Text = "KEBAL: ON"
+            BetonBtn.BackgroundColor3 = Color3.fromRGB(50,120,50)
+        else
+            BetonBtn.Text = "KEBAL: OFF"
+            BetonBtn.BackgroundColor3 = Color3.fromRGB(50,50,120)
+        end
+    end)
 end
 
 createUI()
 
+
 player.CharacterAdded:Connect(function(char)
-    task.wait(0.5)
-    elapsedTime = 0 -- reset timer kalau respawn
-    if not player.PlayerGui:FindFirstChild("SUCKARDY_AnimUI") then
+    wait(0.5)
+    if not player.PlayerGui:FindFirstChild("WataX_AnimUI") then
         createUI()
-    elseif TimerLabel then
-        TimerLabel.Text = "Timer: 00:00"
     end
 end)
 
-RunService.RenderStepped:Connect(function(dt)
-    if isActive then
-        elapsedTime += dt
-        if TimerLabel then
-            TimerLabel.Text = "Timer: " .. formatTime(elapsedTime)
-        end
-    end
-end)
-
-print("✅ SUCKARDY Anim + Timer + Anti Kursi/Pohon siap")
+print("âœ… WataX Anim + BETON siap, UI persistent")
