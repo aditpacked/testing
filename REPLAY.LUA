@@ -261,16 +261,15 @@ titleBar.BackgroundColor3 = Color3.fromRGB(25,25,30)
 Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0,10)
 
 local title = Instance.new("TextLabel", titleBar)
-title.Size = UDim2.new(1, 0, 1, 0) -- full lebar
-title.Position = UDim2.new(0, 0, 0, 0)
-title.AnchorPoint = Vector2.new(0,0)
+title.Size = UDim2.new(1, -60, 1, 0) -- sisain ruang kiri+kanan 30px
+title.Position = UDim2.new(0, 30, 0, 0) -- mulai setelah tombol close (30px)
 title.BackgroundTransparency = 1
 title.Text = "Auto Walk"
 title.TextColor3 = Color3.fromRGB(235,235,235)
 title.Font = Enum.Font.GothamBold
 title.TextScaled = true
-title.TextXAlignment = Enum.TextXAlignment.Center -- biar center horizontal
-title.TextYAlignment = Enum.TextYAlignment.Center -- biar center vertical
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.TextYAlignment = Enum.TextYAlignment.Center
 
 local closeBtn = Instance.new("TextButton", titleBar)
 closeBtn.Size = UDim2.new(0,26,0,26)
