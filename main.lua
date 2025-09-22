@@ -23,7 +23,7 @@ UICorner.Parent = Frame
 
 local UIStroke = Instance.new("UIStroke")
 UIStroke.Thickness = 2
-UIStroke.Color = Color3.fromRGB(180, 0, 255) -- ungu neon
+UIStroke.Color = Color3.fromRGB(255, 255, 255) -- putih
 UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 UIStroke.Parent = Frame
 
@@ -32,7 +32,7 @@ local Title = Instance.new("TextLabel")
 Title.Size = UDim2.new(1, 0, 0, 36)
 Title.BackgroundTransparency = 1
 Title.Text = "🛠 TOOLS"
-Title.TextColor3 = Color3.fromRGB(230, 230, 230)
+Title.TextColor3 = Color3.fromRGB(240, 240, 240)
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.Parent = Frame
@@ -56,7 +56,7 @@ local function createButton(name, text, posY, link)
     corner.Parent = btn
 
     local stroke = Instance.new("UIStroke")
-    stroke.Color = Color3.fromRGB(180, 0, 255)
+    stroke.Color = Color3.fromRGB(255, 255, 255) -- putih
     stroke.Thickness = 1.5
     stroke.Parent = btn
 
@@ -94,7 +94,7 @@ corner.CornerRadius = UDim.new(1, 0)
 corner.Parent = CloseBtn
 
 local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.fromRGB(255, 90, 90)
+stroke.Color = Color3.fromRGB(255, 255, 255) -- putih
 stroke.Thickness = 1.5
 stroke.Parent = CloseBtn
 
