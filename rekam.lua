@@ -12,7 +12,7 @@ local HttpService = game:GetService("HttpService")
 local records = {}
 local isRecording = false
 local frameTime = 1/30 -- 30 FPS
-local currentFileName = "Replay.json"
+local currentFileName = "ISI NAMA MAP.json"
 local replayFolder = "SUCKARDY"
 local selectedReplayFile = nil
 
@@ -111,7 +111,7 @@ local textbox = Instance.new("TextBox", frame)
 textbox.Size = UDim2.new(1, -20, 0, 30)
 textbox.Position = UDim2.new(0, 10, 0, 10)
 textbox.PlaceholderText = "Nama File (ex: Run1.json)"
-textbox.Text = "Replay.json"
+textbox.Text = "ISI NAMA MAP.json"
 textbox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 textbox.BackgroundTransparency = 0.2
 textbox.TextColor3 = Color3.new(1,1,1)
