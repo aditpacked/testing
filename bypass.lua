@@ -33,11 +33,11 @@ if player.Character then setup(player.Character) end
 
 -- === BUAT UI ===
 local function createUI()
-    if player.PlayerGui:FindFirstChild("Animasi_UI") then
-        player.PlayerGui.Animasi_UI:Destroy()
+    if game.CoreGui:FindFirstChild("Animasi_UI") then
+        game.CoreGui.Animasi_UI:Destroy()
     end
 
-    local ScreenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+    local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
     ScreenGui.Name = "Animasi_UI"
     ScreenGui.ResetOnSpawn = false
 
@@ -87,9 +87,9 @@ createUI()
 
 player.CharacterAdded:Connect(function(char)
     task.wait(0.5)
-    if not player.PlayerGui:FindFirstChild("Animasi_UI") then
+    if not game.CoreGui:FindFirstChild("Animasi_UI") then
         createUI()
     end
 end)
 
-print("✅ Animasi script siap, UI minimalis aktif")
+print("✅ Animasi script siap, UI minimalis aktif (pakai CoreGui)")
