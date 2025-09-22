@@ -261,6 +261,7 @@ recordBtn = makeBtn("⏺ Start Record", function()
 end)
 
 makeBtn("💾 Save Replay", function()
+    openSavePopup() 
     -- popup save tetap yang lama
     print("Save Replay popup (sudah di atas)")
 end)
