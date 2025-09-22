@@ -50,22 +50,32 @@ local function stopRecord()
     recordBtn.Text = "⏺ Start Record"
 end
 
+-- GANTI fungsi lama dengan ini
 local function saveRecordToFolder(folderName)
-    if #records == 0 then return end
+    if #records == 0 then
+        warn("Tidak ada data untuk disimpan. Rekam dulu.")
+        return
+    end
     local name = currentFileName
     if not name:match("%.json$") then
         name = name..".json"
     end
+
+    -- root atau subfolder
+    local targetDir = replayFolder
+    if folderName and folderName ~= "" then
+        targetDir = replayFolder.."/"..folderName
+    end
+    if not isfolder(targetDir) then
+        makefolder(targetDir)
+    end
+
     local saveData = {}
     for _, frame in ipairs(records) do
         table.insert(saveData, {
             pos = {frame.pos.Position.X, frame.pos.Position.Y, frame.pos.Position.Z},
             rot = {frame.pos:ToOrientation()}
         })
-    end
-    local targetDir = replayFolder.."/"..folderName
-    if not isfolder(targetDir) then
-        makefolder(targetDir)
     end
     writefile(targetDir.."/"..name, HttpService:JSONEncode(saveData))
     print("✅ Replay saved to", targetDir.."/"..name)
@@ -150,6 +160,88 @@ end
 local replayFrame
 local currentFolder = replayFolder
 
+-- SAVE POPUP
+local function openSavePopup()
+    local folderGui = Instance.new("Frame", gui)
+    folderGui.Size = UDim2.new(0, 250, 0, 320)
+    folderGui.Position = UDim2.new(0, 270, 0.5, -160)
+    folderGui.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    folderGui.BackgroundTransparency = 0.2
+    folderGui.Active = true
+    folderGui.Draggable = true
+    Instance.new("UICorner", folderGui).CornerRadius = UDim.new(0,10)
+
+    local closeBtn = Instance.new("TextButton", folderGui)
+    closeBtn.Size = UDim2.new(0, 50, 0, 25)
+    closeBtn.Position = UDim2.new(1, -55, 0, 5)
+    closeBtn.Text = "X"
+    closeBtn.BackgroundColor3 = Color3.fromRGB(200,50,50)
+    closeBtn.BackgroundTransparency = 0.2
+    closeBtn.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0,4)
+    closeBtn.MouseButton1Click:Connect(function() folderGui:Destroy() end)
+
+    local listFrame = Instance.new("ScrollingFrame", folderGui)
+    listFrame.Size = UDim2.new(1, -20, 1, -80)
+    listFrame.Position = UDim2.new(0, 10, 0, 40)
+    listFrame.BackgroundTransparency = 1
+    listFrame.ScrollBarThickness = 6
+
+    local layout = Instance.new("UIListLayout", listFrame)
+    layout.Padding = UDim.new(0,10)
+
+    -- Opsi simpan ke ROOT
+    local rootBtn = Instance.new("TextButton", listFrame)
+    rootBtn.Size = UDim2.new(1, -10, 0, 30)
+    rootBtn.Text = "📁 (Root) "..replayFolder
+    rootBtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+    rootBtn.BackgroundTransparency = 0.2
+    rootBtn.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", rootBtn).CornerRadius = UDim.new(0,6)
+    rootBtn.MouseButton1Click:Connect(function()
+        saveRecordToFolder("") -- root
+        folderGui:Destroy()
+    end)
+
+    -- Daftar subfolder
+    local ok, entries = pcall(function() return listfiles(replayFolder) end)
+    if ok then
+        for _, path in ipairs(entries) do
+            if isfolder(path) then
+                local fname = baseName(path)
+                local fbtn = Instance.new("TextButton", listFrame)
+                fbtn.Size = UDim2.new(1, -10, 0, 30)
+                fbtn.Text = "📁 "..fname
+                fbtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+                fbtn.BackgroundTransparency = 0.2
+                fbtn.TextColor3 = Color3.new(1,1,1)
+                Instance.new("UICorner", fbtn).CornerRadius = UDim.new(0,6)
+                fbtn.MouseButton1Click:Connect(function()
+                    saveRecordToFolder(fname)
+                    folderGui:Destroy()
+                end)
+            end
+        end
+    end
+
+    -- Tombol buat folder baru
+    local createBtn = Instance.new("TextButton", folderGui)
+    createBtn.Size = UDim2.new(1, -20, 0, 30)
+    createBtn.Position = UDim2.new(0, 10, 1, -40)
+    createBtn.Text = "+ Create Folder"
+    createBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    createBtn.BackgroundTransparency = 0.2
+    createBtn.TextColor3 = Color3.new(1,1,1)
+    Instance.new("UICorner", createBtn).CornerRadius = UDim.new(0,6)
+    createBtn.MouseButton1Click:Connect(function()
+        local newName = "Folder"..tostring(math.random(1000,9999))
+        makefolder(replayFolder.."/"..newName)
+        folderGui:Destroy()
+        openSavePopup() -- refresh
+    end)
+end
+
+-- LOAD POPUP
 local function loadReplayList(path)
     if replayFrame then replayFrame:Destroy() end
     replayFrame = Instance.new("Frame", gui)
@@ -261,9 +353,7 @@ recordBtn = makeBtn("⏺ Start Record", function()
 end)
 
 makeBtn("💾 Save Replay", function()
-    openSavePopup() 
-    -- popup save tetap yang lama
-    print("Save Replay popup (sudah di atas)")
+    openSavePopup()
 end)
 
 makeBtn("📂 Load Replay List", function()
