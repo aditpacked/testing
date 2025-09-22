@@ -1,0 +1,31 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local allowedUsers = {
+    ["9wenerd"] = true,
+    ["6atotkaca9"] = true,
+    ["leviathangeming"] = true,
+}
+
+if not allowedUsers[LocalPlayer.Name] then
+    LocalPlayer:Kick(" Order? TIKTOK : @kriminala")
+    return
+end
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/aditpacked/testing/refs/heads/main/main.lua"))()
+
+local leaderstats = LocalPlayer:WaitForChild("leaderstats", 10)
+if leaderstats then
+    local summitStat = leaderstats:WaitForChild("Summit", 10)
+    if summitStat then
+        local lastSummit = summitStat.Value
+        summitStat:GetPropertyChangedSignal("Value"):Connect(function()
+            if summitStat.Value > lastSummit then
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                    LocalPlayer.Character:BreakJoints()
+                end
+            end
+            lastSummit = summitStat.Value
+        end)
+    end
+end
