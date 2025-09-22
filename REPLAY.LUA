@@ -22,7 +22,6 @@ player.CharacterAdded:Connect(refreshHRP)
 local frameTime = 1/30
 local playbackRate = 1.0
 local isRunning = false
-
 local ReplayFolder = "Wataxrecord"
 
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
@@ -194,8 +193,8 @@ local function showReplaySelectorMulti(folder)
     local okBtn = Instance.new("TextButton", Popup)
     okBtn.Size = UDim2.new(1,-10,0,32)
     okBtn.Position = UDim2.new(0,5,1,-37)
-    okBtn.Text = "▶ Start"
-    okBtn.BackgroundColor3 = Color3.fromRGB(60,120,220)
+    okBtn.Text = "▶ Load"
+    okBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
     okBtn.TextColor3 = Color3.new(1,1,1)
     okBtn.Font = Enum.Font.GothamBold
     okBtn.TextScaled = true
@@ -258,7 +257,7 @@ Instance.new("UICorner", frame).CornerRadius = UDim.new(0,12)
 
 local title = Instance.new("TextLabel",frame)
 title.Size = UDim2.new(1,0,0,32)
-title.Text = "WataX Replay"
+title.Text = "Auto Walk"
 title.BackgroundColor3 = Color3.fromRGB(25,25,30)
 title.TextColor3 = Color3.fromRGB(235,235,235)
 title.Font = Enum.Font.GothamBold
@@ -266,10 +265,10 @@ title.TextScaled = true
 Instance.new("UICorner", title).CornerRadius = UDim.new(0,12)
 
 local startAll = Instance.new("TextButton",frame)
-startAll.Size = UDim2.new(1,-20,0,42)
+startAll.Size = UDim2.new(1,-50,0,42)
 startAll.Position = UDim2.new(0,10,0,50)
-startAll.Text = "Start To End"
-startAll.BackgroundColor3 = Color3.fromRGB(60,120,220)
+startAll.Text = "Load Map"
+startAll.BackgroundColor3 = Color3.fromRGB(45,45,45)
 startAll.TextColor3 = Color3.fromRGB(255,255,255)
 startAll.Font = Enum.Font.GothamBold
 startAll.TextScaled = true
@@ -289,4 +288,37 @@ closeBtn.TextScaled = true
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(0,6)
 closeBtn.MouseButton1Click:Connect(function()
     if screenGui then screenGui:Destroy() end
+end)
+
+local miniBtn = Instance.new("TextButton", frame)
+miniBtn.Size = UDim2.new(0,26,0,26)
+miniBtn.Position = UDim2.new(1,-56,0,2)
+miniBtn.Text = "—"
+miniBtn.BackgroundColor3 = Color3.fromRGB(60,60,60)
+miniBtn.TextColor3 = Color3.fromRGB(255,255,255)
+miniBtn.Font = Enum.Font.GothamBold
+miniBtn.TextScaled = true
+Instance.new("UICorner", miniBtn).CornerRadius = UDim.new(0,6)
+
+local bubbleBtn = Instance.new("TextButton", screenGui)
+bubbleBtn.Size = UDim2.new(0,80,0,36)
+bubbleBtn.Position = UDim2.new(0,20,0.7,0)
+bubbleBtn.Text = "Auto Walk"
+bubbleBtn.BackgroundColor3 = Color3.fromRGB(45,45,45)
+bubbleBtn.TextColor3 = Color3.fromRGB(255,255,255)
+bubbleBtn.Font = Enum.Font.GothamBold
+bubbleBtn.TextScaled = true
+bubbleBtn.Visible = false
+bubbleBtn.Active = true
+bubbleBtn.Draggable = true
+Instance.new("UICorner", bubbleBtn).CornerRadius = UDim.new(0,12)
+
+miniBtn.MouseButton1Click:Connect(function()
+    frame.Visible = false
+    bubbleBtn.Visible = true
+end)
+
+bubbleBtn.MouseButton1Click:Connect(function()
+    frame.Visible = true
+    bubbleBtn.Visible = false
 end)
