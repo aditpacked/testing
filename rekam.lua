@@ -12,13 +12,12 @@ local records = {}
 local isRecording = false
 local frameTime = 1/30 -- 30 FPS
 local currentFileName = "Replay.json"
-local replayFolder = "Wataxrecord"
+local replayFolder = "SUCKARDY"
 local selectedReplayFile = nil
 
 if not isfolder(replayFolder) then
     makefolder(replayFolder)
 end
-
 
 local function startRecord()
     if isRecording then return end
@@ -42,7 +41,6 @@ local function stopRecord()
     recordBtn.Text = "⏺ Start Record"
 end
 
-
 local function saveRecordToFolder(folderName)
     if #records == 0 then return end
     local name = currentFileName
@@ -63,8 +61,8 @@ local function saveRecordToFolder(folderName)
     print("✅ Replay saved to", replayFolder.."/"..folderName.."/"..name)
 end
 
-
 local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "SUCKARDYReplay"
 
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 220, 0, 180)
@@ -107,7 +105,6 @@ local function makeBtn(ref, text, pos, callback, color)
     return btn
 end
 
-
 recordBtn = makeBtn("recordBtn", "⏺ Start Record", 50, function()
     if isRecording then
         stopRecord()
@@ -115,7 +112,6 @@ recordBtn = makeBtn("recordBtn", "⏺ Start Record", 50, function()
         startRecord()
     end
 end)
-
 
 makeBtn(nil, "💾 Save Replay", 90, function()
     local folderGui = Instance.new("Frame", gui)
@@ -158,7 +154,6 @@ makeBtn(nil, "💾 Save Replay", 90, function()
         end
     end
 
-    
     local createBtn = Instance.new("TextButton", folderGui)
     createBtn.Size = UDim2.new(1, -20, 0, 30)
     createBtn.Position = UDim2.new(0, 10, 0, yPos)
@@ -176,7 +171,6 @@ end, Color3.fromRGB(0,200,100))
 
 -- =========================================================
 
--- =========================================================
 local replayFrame
 local currentFolder = replayFolder
 
@@ -204,7 +198,6 @@ local function loadReplayList(path)
         replayFrame = nil
     end)
 
-    
     local listFrame = Instance.new("ScrollingFrame", replayFrame)
     listFrame.Size = UDim2.new(1, -20, 1, -50)
     listFrame.Position = UDim2.new(0, 10, 0, 40)
@@ -286,7 +279,6 @@ local function loadReplayList(path)
         end
     end
 end
-
 
 makeBtn(nil, "📂 Load Replay List", 130, function()
     loadReplayList(replayFolder)
