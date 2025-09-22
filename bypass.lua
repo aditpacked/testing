@@ -5,6 +5,7 @@ local player = Players.LocalPlayer
 local isAnimasi = true
 local animConn
 
+-- === FUNGSI UTAMA ===
 local function setup(char)
     local humanoid = char:WaitForChild("Humanoid")
     local hrp = char:WaitForChild("HumanoidRootPart")
@@ -30,30 +31,26 @@ end
 player.CharacterAdded:Connect(setup)
 if player.Character then setup(player.Character) end
 
+-- === BUAT UI ===
 local function createUI()
     if player.PlayerGui:FindFirstChild("Animasi_UI") then
         player.PlayerGui.Animasi_UI:Destroy()
     end
 
-    local ScreenGui = Instance.new("ScreenGui")
+    local ScreenGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
     ScreenGui.Name = "Animasi_UI"
     ScreenGui.ResetOnSpawn = false
-    ScreenGui.Parent = player:WaitForChild("PlayerGui")
 
-    local Frame = Instance.new("Frame")
+    local Frame = Instance.new("Frame", ScreenGui)
     Frame.Size = UDim2.new(0,160,0,70)
     Frame.Position = UDim2.new(0.05,0,0.05,0)
     Frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
     Frame.BorderSizePixel = 0
     Frame.Active = true
     Frame.Draggable = true
-    Frame.Parent = ScreenGui
+    Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,8)
 
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0,8)
-    UICorner.Parent = Frame
-
-    local Label = Instance.new("TextLabel")
+    local Label = Instance.new("TextLabel", Frame)
     Label.Size = UDim2.new(1,-10,0,22)
     Label.Position = UDim2.new(0,5,0,5)
     Label.BackgroundTransparency = 1
@@ -62,9 +59,8 @@ local function createUI()
     Label.TextSize = 15
     Label.Text = "Animasi"
     Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.Parent = Frame
 
-    local AnimBtn = Instance.new("TextButton")
+    local AnimBtn = Instance.new("TextButton", Frame)
     AnimBtn.Size = UDim2.new(1,-10,0,30)
     AnimBtn.Position = UDim2.new(0,5,0,35)
     AnimBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
@@ -73,11 +69,7 @@ local function createUI()
     AnimBtn.Font = Enum.Font.GothamBold
     AnimBtn.TextSize = 14
     AnimBtn.Text = "ANIMASI: ON"
-    AnimBtn.Parent = Frame
-
-    local AnimCorner = Instance.new("UICorner")
-    AnimCorner.CornerRadius = UDim.new(0,6)
-    AnimCorner.Parent = AnimBtn
+    Instance.new("UICorner", AnimBtn).CornerRadius = UDim.new(0,6)
 
     AnimBtn.MouseButton1Click:Connect(function()
         isAnimasi = not isAnimasi
