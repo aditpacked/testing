@@ -22,10 +22,10 @@ player.CharacterAdded:Connect(refreshHRP)
 local frameTime = 1/30
 local playbackRate = 1.0
 local isRunning = false
-local ReplayFolder = "Wataxrecord"
+local ReplayFolder = "SUCKARDY"
 
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
-screenGui.Name = "WataXReplay"
+screenGui.Name = "SUCKARDYReplay"
 screenGui.ResetOnSpawn = false
 
 local function loadReplayJSON(folder, fileName)
