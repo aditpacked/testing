@@ -24,8 +24,6 @@ local playbackRate = 1.0
 local isRunning = false
 local isPaused = false
 local ReplayFolder = "SUCKARDY"
-local currentFrameIndex = nil
-local currentFrames = nil
 
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
 screenGui.Name = "SUCKARDYReplay"
@@ -89,22 +87,15 @@ end
 local function lerpCF(fromCF, toCF)
     local duration = frameTime / math.max(0.05, playbackRate)
     local t = 0
-    local lastCF = fromCF
     while t < duration do
         if not isRunning then break end
-
-        -- kalau lagi pause, tunggu tanpa update HRP
-        if isPaused then
-            task.wait()
-        else
-            local dt = task.wait()
-            t += dt
-            local alpha = math.min(t / duration, 1)
-            lastCF = fromCF:Lerp(toCF, alpha)
-
-            if hrp and hrp.Parent and hrp:IsDescendantOf(workspace) then
-                hrp.CFrame = lastCF
-            end
+        while isPaused and isRunning do task.wait() end
+        if not isRunning then break end
+        local dt = task.wait()
+        t += dt
+        local alpha = math.min(t / duration, 1)
+        if hrp and hrp.Parent and hrp:IsDescendantOf(workspace) then
+            hrp.CFrame = fromCF:Lerp(toCF, alpha)
         end
     end
 end
@@ -113,21 +104,12 @@ local function playReplay(frames)
     if #frames < 2 then return end
     if not hrp then refreshHRP() end
     isRunning = true
-    currentFrames = frames
-    local startIdx = currentFrameIndex or getNearestFrameIndex(frames)
-
+    local startIdx = getNearestFrameIndex(frames)
     for i = startIdx, #frames - 1 do
         if not isRunning then break end
-        if isPaused then
-            currentFrameIndex = i   -- simpan index terakhir
-            return                  -- keluar biar benar-benar stop
-        end
         lerpCF(frames[i], frames[i+1])
     end
-
     isRunning = false
-    currentFrameIndex = nil
-    currentFrames = nil
 end
 
 local function playChainedReplays(framesList)
@@ -136,10 +118,8 @@ local function playChainedReplays(framesList)
     while isRunning do
         if not hrp then refreshHRP() end
         local used = {}
+        local currentFrames
         local nearestDist = math.huge
-        currentFrames = nil
-
-        -- cari frames terdekat
         for _, frames in ipairs(framesList) do
             if #frames > 0 then
                 local d = (frames[1].Position - hrp.Position).Magnitude
@@ -149,23 +129,16 @@ local function playChainedReplays(framesList)
                 end
             end
         end
-
         while isRunning and currentFrames do
             used[currentFrames] = true
-            local startIdx = currentFrameIndex or getNearestFrameIndex(currentFrames)
-
+            local startIdx = getNearestFrameIndex(currentFrames)
             for i = startIdx, #currentFrames - 1 do
                 if not isRunning then break end
-                if isPaused then
-                    currentFrameIndex = i   -- simpan index terakhir
-                    return
-                end
+                while isPaused and isRunning do task.wait() end
+                if not isRunning then break end
                 lerpCF(currentFrames[i], currentFrames[i+1])
             end
-
             if not isRunning then break end
-
-            -- lanjut cari nextFrames
             local lastCF = currentFrames[#currentFrames]
             local nextFrames, nextDist = nil, math.huge
             for _, frames in ipairs(framesList) do
@@ -178,17 +151,13 @@ local function playChainedReplays(framesList)
                 end
             end
             currentFrames = nextFrames
-            currentFrameIndex = nil
         end
-
         if not isRunning then break end
         local char = player.Character or player.CharacterAdded:Wait()
         char:WaitForChild("HumanoidRootPart")
         task.wait(10)
     end
     isRunning = false
-    currentFrames = nil
-    currentFrameIndex = nil
 end
 
 -- === SELECTOR GUI === (tidak berubah)
