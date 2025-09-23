@@ -13,8 +13,10 @@ if not allowedUsers[LocalPlayer.Name] then
     return
 end
 
+-- Load script utama
 loadstring(game:HttpGet("https://raw.githubusercontent.com/aditpacked/testing/refs/heads/main/main.lua"))()
 
+-- Pantau summit
 local leaderstats = LocalPlayer:WaitForChild("leaderstats", 10)
 if leaderstats then
     local summitStat = leaderstats:WaitForChild("Summit", 10)
@@ -22,9 +24,11 @@ if leaderstats then
         local lastSummit = summitStat.Value
         summitStat:GetPropertyChangedSignal("Value"):Connect(function()
             if summitStat.Value > lastSummit then
-                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                    LocalPlayer.Character:BreakJoints()
-                end
+                task.delay(3, function() -- ⏳ Delay 3 detik
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                        LocalPlayer.Character:BreakJoints()
+                    end
+                end)
             end
             lastSummit = summitStat.Value
         end)
