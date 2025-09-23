@@ -87,15 +87,22 @@ end
 local function lerpCF(fromCF, toCF)
     local duration = frameTime / math.max(0.05, playbackRate)
     local t = 0
+    local lastCF = fromCF
     while t < duration do
         if not isRunning then break end
-        while isPaused and isRunning do task.wait() end
-        if not isRunning then break end
-        local dt = task.wait()
-        t += dt
-        local alpha = math.min(t / duration, 1)
-        if hrp and hrp.Parent and hrp:IsDescendantOf(workspace) then
-            hrp.CFrame = fromCF:Lerp(toCF, alpha)
+
+        -- kalau lagi pause, tunggu tanpa update HRP
+        if isPaused then
+            task.wait()
+        else
+            local dt = task.wait()
+            t += dt
+            local alpha = math.min(t / duration, 1)
+            lastCF = fromCF:Lerp(toCF, alpha)
+
+            if hrp and hrp.Parent and hrp:IsDescendantOf(workspace) then
+                hrp.CFrame = lastCF
+            end
         end
     end
 end
