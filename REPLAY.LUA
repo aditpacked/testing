@@ -113,12 +113,21 @@ local function playReplay(frames)
     if #frames < 2 then return end
     if not hrp then refreshHRP() end
     isRunning = true
-    local startIdx = getNearestFrameIndex(frames)
+    currentFrames = frames
+    local startIdx = currentFrameIndex or getNearestFrameIndex(frames)
+
     for i = startIdx, #frames - 1 do
         if not isRunning then break end
+        if isPaused then
+            currentFrameIndex = i   -- simpan index terakhir
+            return                  -- keluar biar benar-benar stop
+        end
         lerpCF(frames[i], frames[i+1])
     end
+
     isRunning = false
+    currentFrameIndex = nil
+    currentFrames = nil
 end
 
 local function playChainedReplays(framesList)
@@ -127,8 +136,10 @@ local function playChainedReplays(framesList)
     while isRunning do
         if not hrp then refreshHRP() end
         local used = {}
-        local currentFrames
         local nearestDist = math.huge
+        currentFrames = nil
+
+        -- cari frames terdekat
         for _, frames in ipairs(framesList) do
             if #frames > 0 then
                 local d = (frames[1].Position - hrp.Position).Magnitude
@@ -138,16 +149,23 @@ local function playChainedReplays(framesList)
                 end
             end
         end
+
         while isRunning and currentFrames do
             used[currentFrames] = true
-            local startIdx = getNearestFrameIndex(currentFrames)
+            local startIdx = currentFrameIndex or getNearestFrameIndex(currentFrames)
+
             for i = startIdx, #currentFrames - 1 do
                 if not isRunning then break end
-                while isPaused and isRunning do task.wait() end
-                if not isRunning then break end
+                if isPaused then
+                    currentFrameIndex = i   -- simpan index terakhir
+                    return
+                end
                 lerpCF(currentFrames[i], currentFrames[i+1])
             end
+
             if not isRunning then break end
+
+            -- lanjut cari nextFrames
             local lastCF = currentFrames[#currentFrames]
             local nextFrames, nextDist = nil, math.huge
             for _, frames in ipairs(framesList) do
@@ -160,13 +178,17 @@ local function playChainedReplays(framesList)
                 end
             end
             currentFrames = nextFrames
+            currentFrameIndex = nil
         end
+
         if not isRunning then break end
         local char = player.Character or player.CharacterAdded:Wait()
         char:WaitForChild("HumanoidRootPart")
         task.wait(10)
     end
     isRunning = false
+    currentFrames = nil
+    currentFrameIndex = nil
 end
 
 -- === SELECTOR GUI === (tidak berubah)
