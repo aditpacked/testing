@@ -24,6 +24,8 @@ local playbackRate = 1.0
 local isRunning = false
 local isPaused = false
 local ReplayFolder = "SUCKARDY"
+local currentFrameIndex = nil
+local currentFrames = nil
 
 local screenGui = Instance.new("ScreenGui", game.CoreGui)
 screenGui.Name = "SUCKARDYReplay"
